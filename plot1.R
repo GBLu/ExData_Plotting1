@@ -16,9 +16,8 @@
 #  this post <www.biostat.jhsph.edu/~rpeng/docs/R-large-tables.html> .
 #
 #  It looks like "fread" in the package "data.table" might be an even better
-#  method for extracting the data of interest, since it appears to include
-#  a grep-like mechanism for filtering the data and allows certain columns
-#  to be included/excluded; but I haven't yet experimented with this. ]
+#  method for extracting the data of interest, since it appears to allow
+#  certain columns to be included/excluded; have yet to experiment with this. ]
 
 # 2) Read the header -- i.e. the column names
 header = read.table("household_power_consumption.txt", 
