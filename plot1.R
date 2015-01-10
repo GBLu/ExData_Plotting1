@@ -19,9 +19,24 @@
 #  method for extracting the data of interest, since it appears to allow
 #  certain columns to be included/excluded; have yet to experiment with this. ]
 
-# 2) Read the header -- i.e. the column names
-header = read.table("household_power_consumption.txt", 
-                    na.strings="?", nrows=1, sep=";",
+# Try and find the data file. If it doesn't exist, warn the
+# user and quit.
+args = commandArgs(trailingOnly=TRUE)
+if(length(args) > 0) {
+    data_fn = args[1]
+} else {
+    data_fn = "household_power_consumption.txt"
+}
+
+print(data_fn)
+if(file.access(data_fn, mode=4) < 0) {
+    print(paste("Data file", data_fn, "can not be read."))
+    print("Please include name of data file as command line argument.")
+    quit()
+}
+
+# 2) If we get this far... read the header -- i.e. the column names
+header = read.table(data_fn, na.strings="?", nrows=1, sep=";",
                     header=TRUE)
 # [N.B. setting nrows=0, reads to end-of-file]
 
@@ -35,16 +50,16 @@ header = read.table("household_power_consumption.txt",
 # a Forum post by Alexey Burlutskiy
 
 library(data.table)
+# nrows should be 60*24*2 = 2880, the number of minutes in 2 days
 nrows = as.integer(difftime(as.POSIXlt("2007-02-03"), as.POSIXlt("2007-02-01"),
                    units="mins"))
-hpc   = fread("household_power_consumption.txt", skip="1/2/2007",
-              nrows = nrows, na.strings = "?")
+hpc   = fread(data_fn, skip="1/2/2007", nrows = nrows, na.strings = "?")
 
 # 4) Assign column names to the data
 #    something in data.table shadows colnames and gives me a warning;
-#    the ":::" operator, the web tells me, forces use of the function
+#    the "::" operator, the web tells me, forces use of the function
 #    from the desired namespace.
-base:::colnames(hpc) = base:::colnames(header)[1:9]
+base::colnames(hpc) = base::colnames(header)[1:9]
 
 # 5) Construct plot, using base plotting system
 title = "Global Active Power"

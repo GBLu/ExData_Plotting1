@@ -44,9 +44,9 @@ read_hpc <- function(data_fn)
 
     # 4) Assign column names to the data
     #    something in data.table shadows colnames and gives me a warning;
-    #    the ":::" operator, the web tells me, forces use of the function
+    #    the "::" operator, the web tells me, forces use of the function
     #    from the desired namespace.
-    base:::colnames(hpc) = base:::colnames(header)[1:9]
+    base::colnames(hpc) = base::colnames(header)[1:9]
 
     # 5) Add a datetime object to the dataframe
     hpc$dto = as.POSIXct(paste(hpc$Date, hpc$Time, sep=" "),
@@ -55,8 +55,25 @@ read_hpc <- function(data_fn)
     return(hpc)
 }
 
-# Read the data and format it into a dataframe: steps 1-5
+# ========== MAIN ========== #
 
+# Try and find the data file. If it doesn't exist,
+# warn the user and quit.
+args = commandArgs(trailingOnly=TRUE)
+if(length(args) > 0) {
+    data_fn = args[1]
+} else {
+    data_fn = "household_power_consumption.txt"
+}
+
+if(file.access(data_fn, mode=4) < 0) {
+    print(paste("Data file", data_fn, "can not be located or read."))
+    print("Please include name of data file as command line argument.")
+    quit()
+}
+
+# Assuming we could fine the data file...
+# read the data and format it into a dataframe: i.e., carry out steps 1-5
 hpc = read_hpc("household_power_consumption.txt")
 
 # 6) Construct and save the plot
